@@ -9,12 +9,12 @@
 
 
 import { useContext } from 'react'
-import { WSContext } from '../state/WSContext'
+import { UserContext } from '../state/'
 
 
 export default function Settings(props) {
   const { name, peek, className, close } = props
-  const { sendMessage } = useContext(WSContext)
+  const { sendMessage } = useContext(UserContext)
 
   const removePlayer = () => {
     sendMessage({

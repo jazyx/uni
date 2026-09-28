@@ -4,13 +4,18 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { WSContext } from '../state/WSContext'
-import { GameContext } from '../state/GameContext'
+import { UserContext } from '../state/'
+import { Connection } from '../components/'
+
 
 
 export default function Tabs() {
-  const { sendMessage, user_name } = useContext(WSContext)
-  const { json, role } = useContext(GameContext)
+  const {
+    sendMessage,
+    user_name,
+    role,
+    json
+  } = useContext(UserContext)
   const [ theme, setTheme ] = useState(json.theme || "")
 
 
@@ -66,6 +71,7 @@ export default function Tabs() {
         {options}
       </select>
       {display}
+      <Connection />
     </div>
   )
 }

@@ -4,20 +4,27 @@
 
 
 import { useState, useRef, useEffect, useContext } from 'react'
-import { WSContext } from '../state/WSContext'
-import { GameContext } from '../state/GameContext'
+import { UserContext } from '../state/'
+import { Throbber } from '../components'
+
+
+const FAILURE_STRING = "Login failed. Please try again."
 
 
 export default function LogIn({ name }) {
   const {
     user_name,
-    socketIsOpen,
-    sendMessage
-  } = useContext(WSContext)
-  const { setJSON } = useContext(GameContext)
+    user_id,
+    isConnected,
+    logIn,
+    loggingIn,
+    setLoggingIn
+  } = useContext(UserContext)
 
   const [ userName, setUserName ] = useState(name || user_name)
-  
+  const [ reason, setReason ] = useState("")
+
+
   const inputRef = useRef()
 
 
@@ -33,29 +40,38 @@ export default function LogIn({ name }) {
 
 
   const loginWith = userName => {
-    const message = {
-      subject: "LOGIN",
+    const userData = {
       user_name: userName.trim()
     }
 
-    sendMessage(message)
-    // First reply has subject LOGGED_IN, so user_name will be
-    // set in WSContext
+    setLoggingIn(true) // show Throbber
+    setReason("")
 
-    // Second reply will be handled by GameContext
+    logIn(userData)
+    // Replay will be treated in GameSocket and result will be
+    // emitted to UserContext. Failure to login resolves with
+    // response.status = "LOGIN_FAILED"
+    .then(response => {
+      console.log("response:", response)
+      if (response.status !== "LOGGED_IN") {
+        setReason(FAILURE_STRING)
+      }
+    })
+    .catch(error => console.warn(error))
+    .finally(() => setLoggingIn(false))
   }
 
 
   const autoLogIn = () => {
-    if (name) { 
+    if (name) {
       loginWith(name)
     }
   }
 
-  
+
   useEffect(autoLogIn, [name])
 
-  
+
   return (
     <div id="login">
       <h1>English Games</h1>
@@ -70,12 +86,14 @@ export default function LogIn({ name }) {
           onChange={updateUserName}
         />
         <button
-          disabled={!socketIsOpen || !userName}
+          disabled={!isConnected || !userName}
           onClick={login}
         >
           Let's Play!
         </button>
+        <span className="feedback">{reason}</span>
       </form>
+      { loggingIn && <Throbber /> }
     </div>
   )
 }

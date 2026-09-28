@@ -12,23 +12,20 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { WSContext } from '../state/WSContext'
-import { GameContext } from '../state/GameContext'
-import Settings from '../components/Settings'
+import { UserContext } from '../state/'
+import { Settings } from '../components'
 import { toneColor } from '../utilities/colors'
 import '../css/memory.css'
 
-
-const FOUND_DELAY = 1000
 
 
 export default function Memory({ role }) {
   const {
     user_name,
-    sendMessage
-  } = useContext(WSContext)
-  const { json, DEPOT } = useContext(GameContext)
-  // initially {}
+    sendMessage,
+    DEPOT,
+    json
+  } = useContext(UserContext)
 
   const [ cards, setCards ] = useState([])
   const [ players, setPlayers ] = useState([])
@@ -87,7 +84,8 @@ export default function Memory({ role }) {
   const layout = cards.map(({image, turned, found}, index) => {
     image = DEPOT+image
     const name = image.replace(/^.+\//, "")
-                    .replace(/\..+$/, "")
+                      .replace(/\..+$/, "")
+                      .replace("_", " ")
     const key = `${index}_${name}`
 
     const foundClass = ((!toFind && found))
@@ -109,6 +107,7 @@ export default function Memory({ role }) {
           ? <img
               src={image}
               alt={name}
+              title={name}
               className={foundClass}
             />
           : turned
@@ -116,6 +115,7 @@ export default function Memory({ role }) {
               <img
                 src={image}
                 alt={name}
+                title={name}
               />
             : <p>{`${name}`}</p>
         }

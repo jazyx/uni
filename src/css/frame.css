@@ -1,9 +1,24 @@
+:root {
+  --duration: 20s;
+  --start-bg: #090;
+  --end-bg: #960;
+}
+
 #frame {
   --tabsSize: 2em;
   --mainSize: calc(100vh - var(--tabsSize));
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  /* <<< TEMPORARY DISPLAY FOR DEBUGGING */
+  /* flex-direction: column;
+  justify-content: space-between; */
+
+  /* RESTORE ABOVE, REMOVE BELOW */
+  & > div {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+  }
+  /* TEMPORARY DISPLAY FOR DEBUGGING >>> */
 
 
   #tabs {
@@ -15,6 +30,38 @@
       margin: 0.25em 0 0;
       font-size: 1.5em;
     }
+
+    /* Dot to show age since connection was last confirmed */
+    .connection {
+      --ring: 1.2em;
+      --margin: 0.125em;
+      --size: calc(var(--ring) + 2 * var(--margin));
+      display: inline-block;
+      width: var(--size);
+      height: var(--size);
+      vertical-align: middle;
+      margin-left: var(--margin);
+      border-radius: var(--size);
+      background-color: #900; /* overruled by transition */
+      cursor: pointer;
+      opacity: 0.25;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      & .lds-ring {
+        opacity: 0.5;
+        height: var(--size);
+        width: var(--size);
+
+        div {
+          width: var(--ring);
+          height: var(--ring);
+          margin: var(--margin);
+        }
+      }
+    }
   }
 
   #main {
@@ -22,5 +69,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
   }
 }

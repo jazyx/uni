@@ -5,34 +5,23 @@
  */
 
 
-import { APIProvider, APIContext } from './APIContext'
-import { WSProvider, WSContext } from'./WSContext'
-import { GameProvider, GameContext } from'./GameContext'
-import {
-  CarouselProvider,
-  CarouselContext
-} from'./CarouselContext'
+import { ENVProvider, ENVContext } from './ENVContext'
+import { UserProvider, UserContext } from'./UserContext'
 
 
 const Provider = ({ children }) => {
   return (
-    <APIProvider>
-      <WSProvider>
-        <GameProvider>
-          <CarouselProvider>
-            {children}
-          </CarouselProvider>
-        </GameProvider>
-      </WSProvider>
-    </APIProvider>
+    <ENVProvider>
+      <UserProvider>
+        {children}
+      </UserProvider>
+    </ENVProvider>
   )
 }
 
 
 export {
   Provider,
-  APIContext,
-  WSContext,
-  GameContext,
-  CarouselContext
+  ENVContext,
+  UserContext
 }
