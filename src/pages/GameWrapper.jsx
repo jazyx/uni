@@ -36,7 +36,7 @@ export default function GameWrapper() {
   const {
     hasConnected,
     user_name,
-    setRole
+    // setRole
   } = useContext(UserContext)
   // const { setRole } = useContext(GameContext)
 
@@ -58,13 +58,13 @@ export default function GameWrapper() {
   }
 
 
-  const updateRole = () => {
-    setRole(role)
-  }
+  // const updateRole = () => {
+  //   setRole(role)
+  // }
 
 
   useEffect(loadActivity, [hasConnected, user_name])
-  useEffect(updateRole, [role])
+  // useEffect(updateRole, [role])
 
 
   return (

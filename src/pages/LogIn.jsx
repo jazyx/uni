@@ -14,13 +14,13 @@ const FAILURE_STRING = "Login failed. Please try again."
 export default function LogIn({ name }) {
   const {
     user_name,
-    user_id,
-    isConnected,
+    hasConnected,
     logIn,
     loggingIn,
     setLoggingIn
   } = useContext(UserContext)
 
+  const [ group, setGroup ] = useState("eng")
   const [ userName, setUserName ] = useState(name || user_name)
   const [ reason, setReason ] = useState("")
 
@@ -28,8 +28,15 @@ export default function LogIn({ name }) {
   const inputRef = useRef()
 
 
-  const updateUserName = ({ target }) => {
-    setUserName(target.value)
+  const updateValue = ({ target }) => {
+    switch (target.name) {
+      case "userName": {
+        return setUserName(target.value)
+      }
+      case "group": {
+        return setGroup(target.value)
+      }
+    }
   }
 
 
@@ -41,7 +48,8 @@ export default function LogIn({ name }) {
 
   const loginWith = userName => {
     const userData = {
-      user_name: userName.trim()
+      user_name: userName.trim(),
+      group: group.trim()
     }
 
     setLoggingIn(true) // show Throbber
@@ -62,14 +70,14 @@ export default function LogIn({ name }) {
   }
 
 
-  const autoLogIn = () => {
-    if (name) {
-      loginWith(name)
-    }
-  }
+  // const autoLogIn = () => {
+  //   if (hasConnected && name) {
+  //     loginWith(name)
+  //   }
+  // }
 
 
-  useEffect(autoLogIn, [name])
+  // useEffect(autoLogIn, [name, hasConnected])
 
 
   return (
@@ -77,16 +85,26 @@ export default function LogIn({ name }) {
       <h1>English Games</h1>
 
       <form>
+        <span>Group name:</span>
+        <input
+          ref={inputRef}
+          type="text"
+          autoFocus
+          name="group"
+          value={group}
+          onChange={updateValue}
+        />
         <span>Write your name:</span>
         <input
           ref={inputRef}
           type="text"
           autoFocus
+          name="userName"
           value={userName}
-          onChange={updateUserName}
+          onChange={updateValue}
         />
         <button
-          disabled={!isConnected || !userName}
+          disabled={!hasConnected || !userName || !group}
           onClick={login}
         >
           Let's Play!

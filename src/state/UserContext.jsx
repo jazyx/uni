@@ -25,6 +25,7 @@ export const UserProvider = ({ children }) => {
   const [ isLoggedIn, setIsLoggedIn ] = useState(false)
   const [ ackCount, setAckCount ] = useState(0)
   const [ user_name, setUserName ] = useState("")
+  const [ group, setGroup ] = useState("")
   const [ role, setRole ] = useState("student")
   const [ state, setState ] = useState("default")
   const [ json, setJSON ] = useState({})
@@ -45,8 +46,12 @@ export const UserProvider = ({ children }) => {
   
     if (loggedIn) {
       setUserName(data.user_name)
+      setUserName(data.user_name)
+      setGroup(data.group)
+      setRole(data.role)
+
     } else {
-      setUserName("")
+      // setUserName("")
     }
 
     setIsLoggedIn(loggedIn)
@@ -142,8 +147,9 @@ export const UserProvider = ({ children }) => {
         setLoggingIn,
         ackCount,
         user_name,
+        group,
         role,
-        setRole,
+
         json,
         setJSON,
 

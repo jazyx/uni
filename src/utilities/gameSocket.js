@@ -126,13 +126,14 @@ function createGameSocket(userOptions) {
 
   let socket       = null
   let generation   = 0 // number of sockets created so far
-  let socket_id    = "" // will be set on "CONNECTION"
+  let socket_id    = "" // will be (re)set on "CONNECTION"
   let state        = "IDLE" // IDLE | EAGER | RECONNECTING
   let restate      = state // for after a reconnection
   let ackTimeoutMs = opts.ackTimeoutMs
   let reconnectMs  = opts.reconnectBaseMs // pause till reconnect
   let reconnectTmr = null
   let closedByUser = false
+  let hasConnected = false
 
   // Debug only
   let pulses       = 0
@@ -140,6 +141,8 @@ function createGameSocket(userOptions) {
   // Unique values provided by backend on login
   let user_id      = "" // unique _id from User database
   let user_name    = "" // human-readable name (not unique?)
+  let group        = "" // 
+  let role         = "" // "teacher" | "student"
 
   const queue      = new Map() // for messages to resend
   const latencies  = [] // most recent Round Trip Times
@@ -177,7 +180,7 @@ function createGameSocket(userOptions) {
     beIdle,
     getState: () => state,
     // Logged in user
-    getUser: () => ({ user_name, user_id }),
+    getUser: () => ({ user_name, user_id, group, role }),
     // Listeners
     on,
     off,
@@ -297,14 +300,19 @@ function createGameSocket(userOptions) {
     // Proactively store the requested user_name and _id, so that
     // _identifyUser() will run if the connection breaks during the
     // log in process
-    ;({ user_name, user_id } = userData)
+    ;({ user_name, user_id, group } = userData)
 
-    return send({
+    if (!hasConnected) { return } // wait for CONNECTION
+
+    const promise = send({
       recipient_id: "SYSTEM",
       subject: "LOG_IN",
       user_name,
-      user_id
+      user_id,
+      group
     }, opts.logInDelay)
+
+    return promise
   }
 
 
@@ -494,6 +502,7 @@ function createGameSocket(userOptions) {
 
     _emit("close", status)
     if (closedByUser) {
+      hasConnected = false // wait CONNECTION before _identifyUser
       _setState("IDLE")
       return
     }
@@ -703,6 +712,7 @@ function createGameSocket(userOptions) {
         // The socket is now ready to send outgoing messages,
         // such as a LOG_IN reminder to the backend of this
         // user's identity.
+        hasConnected = true // remains true until manual disconnect
         _identifyUser()
         break // status available through isConnected()
       }
@@ -737,7 +747,8 @@ function createGameSocket(userOptions) {
     // Store user_id and user_name locally. These can be
     // accessed through gameSocket.getUser()
     if (message.status === "LOGGED_IN") {
-      ({ user_id, user_name } = message)
+      ({ user_id, user_name, group, role } = message)
+      user_name = decodeURI(user_name)
       console.log("gameSocket Logged in as:", user_id, user_name)
 
       // Now that the backend can identify the user to whom
@@ -748,7 +759,7 @@ function createGameSocket(userOptions) {
     } else {
       // LOGIN_FAILED: perhaps the previously connected
       // user has been expelled.
-      user_name = user_id = ""
+      user_name = user_id = group = role = ""
     }
     _emit("pending", {
       corr: message.corr,
@@ -759,7 +770,9 @@ function createGameSocket(userOptions) {
     _emit("logging", {
       status: message.status,
       user_name,
-      user_id
+      user_id,
+      group,
+      role
     })
 
     // .then() and .catch() are in external script for
@@ -767,6 +780,8 @@ function createGameSocket(userOptions) {
     envelope.resolve({
       user_name,
       user_id,
+      group,
+      role,
       status: message.status,
       message: envelope.message // original outgoing message
     })
@@ -790,8 +805,9 @@ function createGameSocket(userOptions) {
       send({
         recipient_id: "SYSTEM",
         subject: "LOG_IN",
+        user_name,
         user_id,
-        user_name
+        group,
       }, opts.logInDelay)
       .then(response => (
         _emit("info", response)

@@ -9,9 +9,10 @@
 
 
 import { createContext } from 'react'
-import { createGameSocket } from '../utilities/gameSocket.js'
+import { createGameSocket } from '../utilities/GameSocket.js'
 
 
+const BASE   = import.meta.env.BASE_URL
 const LOCAL  = import.meta.env.VITE_LOCAL
 const REMOTE = import.meta.env.VITE_REMOTE
 const PATH   = import.meta.env.VITE_PATH
@@ -39,6 +40,7 @@ export const ENVProvider = ({ children }) => {
   return (
     <ENVContext.Provider
       value ={{
+        BASE,   // vite.config.js defineConfig > base
         ORIGIN, // HTTPS? queries
         WSS,    // WebSocket queries
         DEPOT   // source of images
