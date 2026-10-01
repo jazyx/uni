@@ -12,16 +12,19 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { UserContext } from '../state/'
-import { Settings } from '../components'
-import { toneColor } from '../utilities/colors'
-import '../css/memory.css'
+import { UserContext } from '../../state'
+import { toneColor } from '../../utilities/colors'
+import Settings from './Settings'
+import '../../css/memory.css'
 
 
 
-export default function Memory({ role }) {
+export default function Memory() {
   const {
+    on,
+    group,
     user_name,
+    role,
     sendMessage,
     DEPOT,
     json
@@ -73,6 +76,7 @@ export default function Memory({ role }) {
     setFlippedCards(() => flipped)
 
     const message = {
+      group,
       subject: "FLIP_CARD",
       flipped,
       player: user_name

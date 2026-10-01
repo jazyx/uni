@@ -661,6 +661,9 @@ function createGameSocket(userOptions) {
     try { message = JSON.parse(data) } catch { return }
     let treated = false
 
+    console.log("incoming", JSON.stringify(message, null, '  '));
+    
+
     // Any inbound message proves the socket is alive
     ws._ackMiss = 0
     _emit("alive", true)

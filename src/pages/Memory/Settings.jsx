@@ -9,7 +9,7 @@
 
 
 import { useContext } from 'react'
-import { UserContext } from '../state/'
+import { UserContext } from '../../state'
 
 
 export default function Settings(props) {
