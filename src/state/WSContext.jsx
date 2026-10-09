@@ -1,5 +1,5 @@
 /**
- * frontend/src/state/UserContext.jsx
+ * frontend/src/state/WSContext.jsx
  *
  * description
  */
@@ -14,10 +14,10 @@ import {
 import { ENVContext } from './ENVContext'
 
 
-export const UserContext = createContext()
+export const WSContext = createContext()
 
 
-export const UserProvider = ({ children }) => {
+export const WSProvider = ({ children }) => {
   const { ORIGIN, WSS, DEPOT } = useContext(ENVContext)
   const [ hasConnected, setHasConnected ] = useState(false)
   const [ isConnected, setIsConnected ] = useState(false)
@@ -44,14 +44,10 @@ export const UserProvider = ({ children }) => {
   const socketLogging = (data) => {
     const loggedIn = data.status === "LOGGED_IN"
   
-    if (loggedIn) {
-      setUserName(data.user_name)
+    if (loggedIn) { // user_id not needed on voyage
       setUserName(data.user_name)
       setGroup(data.group)
       setRole(data.role)
-
-    } else {
-      // setUserName("")
     }
 
     setIsLoggedIn(loggedIn)
@@ -69,7 +65,7 @@ export const UserProvider = ({ children }) => {
 
   const socketMessage = message => {
     // TODO: handle unsolicited incoming messages
-    console.log("message:", message)
+    // console.log("message:", message)
   }
 
   const socketError = data => {
@@ -122,7 +118,7 @@ export const UserProvider = ({ children }) => {
 
 
   return (
-    <UserContext.Provider
+    <WSContext.Provider
       value ={{
         // https? access
         ORIGIN, // queries
@@ -159,13 +155,13 @@ export const UserProvider = ({ children }) => {
       }}
     >
       {children}
-    </UserContext.Provider>
+    </WSContext.Provider>
   )
 }
 
 
 export default {
   label: "User",
-  Context: UserContext,
-  Provider: UserProvider
+  Context: WSContext,
+  Provider: WSProvider
 }

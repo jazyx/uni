@@ -6,15 +6,21 @@
 
 
 import { ENVProvider, ENVContext } from './ENVContext'
-import { UserProvider, UserContext } from'./UserContext'
+import { WSProvider, WSContext } from'./WSContext'
+import {
+  ActivityProvider,
+  ActivityContext
+} from'./ActivityContext'
 
 
 const Provider = ({ children }) => {
   return (
     <ENVProvider>
-      <UserProvider>
-        {children}
-      </UserProvider>
+      <WSProvider>
+        <ActivityProvider>
+          {children}
+        </ActivityProvider>
+      </WSProvider>
     </ENVProvider>
   )
 }
@@ -23,5 +29,6 @@ const Provider = ({ children }) => {
 export {
   Provider,
   ENVContext,
-  UserContext
+  WSContext,
+  ActivityContext
 }

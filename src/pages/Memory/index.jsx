@@ -12,8 +12,11 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { UserContext } from '../../state'
-import { toneColor } from '../../utilities/colors'
+import {
+  WSContext,
+  ActivityContext
+} from '../../state'
+import { getColor, toneColor } from '../../utilities/colors'
 import Settings from './Settings'
 import '../../css/memory.css'
 
@@ -21,25 +24,27 @@ import '../../css/memory.css'
 
 export default function Memory() {
   const {
-    on,
     group,
     user_name,
     role,
     sendMessage,
-    DEPOT,
-    json
-  } = useContext(UserContext)
+    applyState,
+    DEPOT
+  } = useContext(WSContext)
+  const { activity } = useContext(ActivityContext)
 
   const [ cards, setCards ] = useState([])
   const [ players, setPlayers ] = useState([])
-  const [ toFind, setToFind ] = useState(json.to_find || 999)
+  const [ toFind, setToFind ] = useState(activity.to_find || 999)
 
   const [ flippedCards, setFlippedCards ] = useState([])
   const [ settings, setSettings ] = useState()
 
 
+
+
   const flipCard = ({ target }) => {
-    if (players[json.player].name !== user_name) {
+    if (players[activity.player].user_name !== user_name) {
       // It's not this player's turn. `pointer-actions: none`
       // should already have prevented the click
       return
@@ -61,7 +66,7 @@ export default function Memory() {
     }
 
     // Handle the change locally
-    cards[index].turned = true
+    cards[index].flipped = true
   }
 
 
@@ -77,7 +82,7 @@ export default function Memory() {
 
     const message = {
       group,
-      subject: "FLIP_CARD",
+      subject: "MEMORY.FLIP_CARD",
       flipped,
       player: user_name
     }
@@ -85,7 +90,7 @@ export default function Memory() {
   }
 
 
-  const layout = cards.map(({image, turned, found}, index) => {
+  const layout = cards.map(({image, flipped, found}, index) => {
     image = DEPOT+image
     const name = image.replace(/^.+\//, "")
                       .replace(/\..+$/, "")
@@ -114,7 +119,7 @@ export default function Memory() {
               title={name}
               className={foundClass}
             />
-          : turned
+          : flipped
             ?
               <img
                 src={image}
@@ -128,7 +133,9 @@ export default function Memory() {
 
 
     function playerColor(player) {
-      const playerData = players.find(data => data.name === player)
+      const playerData = players.find(data => (
+        data.user_name === player
+      ))
       return {
         border: `4px inset ${playerData.color}`,
         boxSizing: "border-box"
@@ -143,15 +150,19 @@ export default function Memory() {
   }
 
 
-  const getPlayerData = name => (
-    players.find(data => data.name === name)
+  const getPlayerData = user_name => (
+    players.find(data => data.user_name === user_name)
   )
 
 
-  const score = players.map(({name, score, color}, index) => {
+  const score = players.map(({
+    user_name: name, 
+    score, 
+    color
+  }, index) => {
     let highlight
     if (toFind){
-      highlight = index === json.player
+      highlight = index === activity.player
 
     } else {
       const highScore = getHighScore()
@@ -190,7 +201,7 @@ export default function Memory() {
 
         { role === "teacher" &&
           <Settings
-            name={name}
+            user_name={name}
             className={settingsClass}
             close={setSettings}
             peek={name === user_name || playerCanPeek(name)}
@@ -201,7 +212,9 @@ export default function Memory() {
 
 
     function playerCanPeek(name) {
-      const playerData = players.find(data => data.name === name)
+      const playerData = players.find(({user_name}) => (
+        user_name === name
+      ))
       return !!(playerData && playerData.peek)
     }
 
@@ -215,11 +228,30 @@ export default function Memory() {
   })
 
 
+
+  const initializePlayers = players => {
+    players.forEach((player, number) => {
+      player.color = getColor({ number })
+    })
+    setPlayers(players)
+  }
+
+
+  function preloadImages(cards) {
+    cards.forEach(({ image }) => {
+      const img = new Image()
+      img.src = `${DEPOT}${image}`
+    })
+    
+    setCards(cards)
+  }
+
+
   const startGame = () => {
-    if (json.players) {
-      setPlayers(json.players)
-      setCards(json.cards)
+    if (activity.players) {
+      initializePlayers(activity.players)
     }
+    preloadImages(activity.cards)
   }
 
 
@@ -229,7 +261,7 @@ export default function Memory() {
       players=[],
       to_find,
       turn_over
-    } = json
+    } = activity
 
     if (!players.length) { return }
 
@@ -241,20 +273,29 @@ export default function Memory() {
     setPlayers(players)
     setToFind(to_find)
 
-    const custom = (players[json.player].name === user_name)
+    // Ensure only the current player can turn cards
+    const myTurn = players[activity.player].user_name === user_name
+    const custom = (myTurn)
       ? "all"
       : "none"
 
     document.documentElement.style.setProperty("--events", custom)
+
+    // Keep checking connection if it's not myTurn
+    const mode = myTurn ? "IDLE" : "EAGER"
+    // applyState(mode)
   }
 
 
-  useEffect(startGame, [json.players])
-  useEffect(gameUpdate, [json])
+  // useEffect(registerListeners, [])
+  useEffect(startGame, [activity.players])
+  useEffect(gameUpdate, [activity])
 
 
-  const data = players.find(data => data.name === user_name) || {}
-  const canPeek = role === "teacher" || data.peek
+  const data = players.find(data => (
+    data.user_name === user_name
+  ))
+  const canPeek = data && (role === "teacher" || data.peek)
   const layoutClass = `layout${canPeek
     ? " peek"
     : ""

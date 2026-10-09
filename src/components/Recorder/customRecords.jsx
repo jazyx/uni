@@ -73,7 +73,7 @@ const incoming = ({ data, time }) => {
       <summary
         style={style}
       >
-        {`incoming: ${subject} ${socket_id}`}
+        {`incoming: ${subject} socket_id: ${socket_id}`}
       </summary>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </details>
@@ -111,7 +111,7 @@ const pending = ({ data, time }) => {
       <summary
         style={style}
       >
-        {`pending: ${corr} ${status} ${message.subject}`}
+        {`pending: corr=${corr} ${status} ${message.subject}`}
       </summary>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </details>
@@ -143,7 +143,7 @@ const logging = ({ data, time }) => {
       <summary
         style = {{ backgroundColor: "#66c" }}
       >
-        {`${status}: ${user_name} ${user_id.slice(0, 8)}`}
+        {`${status}: ${user_name} user_id: ${user_id.slice(0, 8)}`}
       </summary>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </details>

@@ -9,33 +9,36 @@
 
 
 import { useContext } from 'react'
-import { UserContext } from '../../state'
+import { WSContext } from '../../state'
 
 
 export default function Settings(props) {
-  const { name, peek, className, close } = props
-  const { sendMessage } = useContext(UserContext)
+  const { user_name, peek, className, close } = props
+  const { sendMessage, group } = useContext(WSContext)
 
   const removePlayer = () => {
     sendMessage({
-      subject: "REMOVE_PLAYER",
-      name
+      subject: "MEMORY.REMOVE_PLAYER",
+      group,
+      user_name
     })
     close()
   }
 
   const activatePlayer = () => {
     sendMessage({
-      subject: "ACTIVATE_PLAYER",
-      name
+      subject: "MEMORY.ACTIVATE_PLAYER",
+      group,
+      user_name
     })
     close()
   }
 
   const allowPeeking = () => {
     sendMessage({
-      subject: "ALLOW_PEEKING",
-      name,
+      subject: "MEMORY.ALLOW_PEEKING",
+      group,
+      user_name,
       peek: !peek
     })
     close()

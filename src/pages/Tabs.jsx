@@ -4,19 +4,20 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { UserContext } from '../state/'
+import {
+  WSContext,
+  ActivityContext
+} from '../state/'
 import { Connection } from '../components/'
 
 
 
 export default function Tabs() {
+  const { sendMessage, group } = useContext(WSContext)
   const {
-    sendMessage,
-    user_name,
-    role,
-    json
-  } = useContext(UserContext)
-  const [ theme, setTheme ] = useState(json.theme || "")
+    activity
+  } = useContext(ActivityContext)
+  const [ theme, setTheme ] = useState(activity.theme || "")
 
 
   const selectTheme = ({ target }) => {
@@ -26,7 +27,8 @@ export default function Tabs() {
 
   const newGame = () => {
     const message = {
-      subject: "NEW_GAME",
+      group,
+      subject: "NEW_GAME", // generic, no Activity namespace
       theme
     }
 
@@ -34,7 +36,7 @@ export default function Tabs() {
   }
 
 
-  const options = json.themes?.map(theme => (
+  const options = activity.themes?.map(theme => (
     <option
       key={theme}
     >
@@ -49,17 +51,17 @@ export default function Tabs() {
       >
         New Game
       </button>
-    : <p>{json.game}</p>
+    : <p>{activity.name.en}</p> // TODO: Localize
 
 
   const setTopic = () => {
-    if (json.theme) {
-      setTheme(json.theme)
+    if (activity.theme) {
+      setTheme(activity.theme)
     }
   }
 
 
-  useEffect(setTopic, [json])
+  useEffect(setTopic, [activity])
 
 
   return (

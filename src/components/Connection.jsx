@@ -14,7 +14,7 @@
 
 
 import { useState, useEffect, useContext } from 'react'
-import { UserContext } from '../state/'
+import { WSContext } from '../state/'
 import { Throbber } from './'
 
 
@@ -28,7 +28,7 @@ export default function Connection(props) {
     isConnected,
     ackCount,
     cpr
-  } = useContext(UserContext)
+  } = useContext(WSContext)
   const [ fading, setFading ] = useState(false)
   
 

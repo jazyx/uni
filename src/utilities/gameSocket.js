@@ -134,6 +134,7 @@ function createGameSocket(userOptions) {
   let reconnectTmr = null
   let closedByUser = false
   let hasConnected = false
+  let firstTryMs   = 0
 
   // Debug only
   let pulses       = 0
@@ -264,6 +265,7 @@ function createGameSocket(userOptions) {
 
   function connect(url) {
     closedByUser = false
+    firstTryMs = Date.now() - 1000 // 1 second fudge factor
     _openSocket("connect()")
   }
 
@@ -661,7 +663,7 @@ function createGameSocket(userOptions) {
     try { message = JSON.parse(data) } catch { return }
     let treated = false
 
-    console.log("incoming", JSON.stringify(message, null, '  '));
+    // console.log("incoming", JSON.stringify(message, null, '  '));
     
 
     // Any inbound message proves the socket is alive
@@ -764,6 +766,7 @@ function createGameSocket(userOptions) {
       // user has been expelled.
       user_name = user_id = group = role = ""
     }
+    
     _emit("pending", {
       corr: message.corr,
       message, // contains status, user_name and user_id
@@ -896,6 +899,7 @@ function createGameSocket(userOptions) {
    * schedules one at the appropriate later time.
    */
   function _reschedulePulse(ws, delay) { // undefined || 0
+    return // ################ TODO: RE-ENABLE ################ //
     if (ws !== socket) { return }
 
     clearTimeout(ws._pulseTimer)
@@ -945,13 +949,20 @@ function createGameSocket(userOptions) {
   function _scheduleReconnect () {
     _cancelReconnect()
 
-    if (reconnectMs === opts.reconnectMaxMs) {
+    const timeSinceFirstTry = Date.now() - firstTryMs
+    console.log("timeSinceFirstTry:", timeSinceFirstTry)
+    if (timeSinceFirstTry > opts.reconnectMaxMs) {
       // The most recent connection attempt happened after a
       // series of increasingly longer delays, now totalling the
       // longest expected delay. It looks like the backend may be
       // offline.
-      const delay = Math.floor(opts.reconnectMaxMs / 1000)
-      const message = `Unable to connect for ${delay}s`
+      const delay = Math.floor(timeSinceFirstTry / 10000) * 10
+      const mins = Math.floor(delay / 60)
+      const late = (mins)
+        ? `over ${mins === 1 ? "a minute" : mins + " minutes"}`
+        : `over ${delay} seconds`
+      console.log("delay:", delay, ", mins:", mins, ", late:", late)
+      const message = `Unable to connect for ${late}`
       _emit("warn", { issue: "connection", message })
       // This warning will be repeated every reconnectMaxMs ms
       // until a connection is established or the user

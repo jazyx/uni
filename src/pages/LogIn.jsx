@@ -3,8 +3,8 @@
  */
 
 
-import { useState, useRef, useEffect, useContext } from 'react'
-import { UserContext } from '../state/'
+import { useState, useRef, useContext } from 'react'
+import { WSContext } from '../state/'
 import { Throbber } from '../components'
 
 
@@ -18,7 +18,7 @@ export default function LogIn({ name }) {
     logIn,
     loggingIn,
     setLoggingIn
-  } = useContext(UserContext)
+  } = useContext(WSContext)
 
   const [ group, setGroup ] = useState("eng")
   const [ userName, setUserName ] = useState(name || user_name)
@@ -57,7 +57,7 @@ export default function LogIn({ name }) {
 
     logIn(userData)
     // Replay will be treated in GameSocket and result will be
-    // emitted to UserContext. Failure to login resolves with
+    // emitted to WSContext. Failure to login resolves with
     // response.status = "LOGIN_FAILED"
     .then(response => {
       console.log("response:", response)
@@ -68,16 +68,6 @@ export default function LogIn({ name }) {
     .catch(error => console.warn(error))
     .finally(() => setLoggingIn(false))
   }
-
-
-  // const autoLogIn = () => {
-  //   if (hasConnected && name) {
-  //     loginWith(name)
-  //   }
-  // }
-
-
-  // useEffect(autoLogIn, [name, hasConnected])
 
 
   return (

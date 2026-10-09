@@ -9,7 +9,7 @@ import {
   useContext,
   useRef
 } from 'react'
-import { UserContext } from '../../state/'
+import { WSContext } from '../../state/'
 import './recorder.css'
 import custom from './customRecords.jsx'
 
@@ -21,26 +21,18 @@ export default function Recorder() {
   const {
     on,
     events,
-  } = useContext(UserContext)
-  const [ visible, setVisible ] = useState(true)
+  } = useContext(WSContext)
+  const [ visible, setVisible ] = useState(false)
   const [ cleared, setCleared ] = useState(0)
   const [ scrolledToEnd, setScrolledToEnd ] = useState(true)
   const [ history, setHistory ] = useState([])
   const listRef = useRef()
-  // if (typeof eventHandler === "object") {
-  //   eventHandler.handleEvent = handleEvent
-  // }
 
 
   function toggleRecorder({ target }) {
     const { checked } = target
 
     setVisible(checked)
-
-    // if (checked) {
-    //   // Apply scroll status to open list
-    //   list.scrollTop = scrollTop
-    // }
   }
 
 
@@ -84,7 +76,7 @@ export default function Recorder() {
     ms = ms < 10 ? "00"+ms : ms < 100 ? "0"+ms : ms
     // Add random characters to reduce the risk of key clash
     const chunk = randomChunk()
-    
+
     return `${time.toTimeString().slice(0, 8)}.${ms}${chunk}`
   }
 
@@ -115,24 +107,11 @@ export default function Recorder() {
                          .map(entry => {
     const customFunction = custom[entry.event]
 
-    const result = (customFunction) 
+    const result = (customFunction)
       ? customFunction(entry)
       : custom.simple(entry)
-    
+
     return result
-    // const {event, data, time} = entry
-    // return (
-    //   <details
-    //     key={time}
-    //   >
-    //     <summary>
-    //       {event}
-    //     </summary>
-    //     <pre>
-    //       {JSON.stringify(data, null, 2)}
-    //     </pre>
-    //   </details>
-    // )
   })
 
 
@@ -179,7 +158,7 @@ export default function Recorder() {
             Save
           </button>
         </>)}
-      </div> 
+      </div>
       { visible && (
         <div
           className="list"

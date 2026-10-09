@@ -8,7 +8,7 @@
 
 import { useContext, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
-import { UserContext } from '../state'
+import { WSContext } from '../state'
 import Tabs from './Tabs'
 import { Recorder } from '../components' // DEBUGGING ONLY
 import { parsePath } from '../utilities/location'
@@ -17,7 +17,7 @@ import '../css/frame.css'
 
 
 export default function Frame() {
-  const { hasConnected, logIn } = useContext(UserContext)
+  const { hasConnected, logIn } = useContext(WSContext)
 
 
   /**
