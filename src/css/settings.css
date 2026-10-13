@@ -1,0 +1,55 @@
+
+
+.player {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+
+  &:has(.settings) {
+    cursor: pointer;
+    pointer-events: all;
+  }
+  & p {
+    margin: 0;
+  }
+}
+
+.settings {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 1.25em;
+  z-index: 1;
+
+  &.hide {
+    display: none
+  }
+
+  & button {
+    width: 100%;
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+  }
+}
+
+.score {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: var(--square);
+
+  & p {
+    margin: 0 1em;
+
+    &.current {
+      color: #fff;
+    }
+  }
+
+  & span {
+    margin-left: 1em;
+  }
+}

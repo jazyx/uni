@@ -9,7 +9,7 @@
 
 
 import { useContext } from 'react'
-import { WSContext } from '../../state'
+import { WSContext } from '../state'
 
 
 export default function Settings(props) {

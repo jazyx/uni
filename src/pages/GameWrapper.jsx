@@ -48,7 +48,12 @@ export default function GameWrapper() {
   }
 
 
-  useEffect(loadActivity, [hasConnected, user_name, component])
+  useEffect(loadActivity, [
+    hasConnected,
+    user_name,
+    component,
+    activities
+  ])
 
 
   return (

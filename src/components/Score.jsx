@@ -1,0 +1,106 @@
+/**
+ * frontend/src/components/Score.jsx
+ */
+
+
+import { useState, useEffect, useContext } from 'react'
+import { WSContext, ActivityContext } from '../state'
+import { Settings } from './'
+import { getColor, toneColor } from '../utilities/colors'
+import '../css/settings.css'
+
+
+export default function Score({ gameOver }) {
+  const {
+    user_name,
+    role
+  } = useContext(WSContext)
+  const { activity } = useContext(ActivityContext)
+  const { players, player } = activity
+  const [ settings, setSettings ] = useState("")
+
+
+  const initializePlayers = () => {
+    activity?.players?.forEach((player, number) => {
+      player.color = getColor({ number })
+    })
+  }
+
+
+  function showSettings() {
+    if (settings === user_name) {
+      return setSettings()
+    }
+    setSettings(user_name)
+  }
+
+
+  const getHighScore = () => {
+    const scores = players.map(({score}) => score)
+    return Math.max.apply(null, scores)
+  }
+
+
+  const score = players?.map(({
+    user_name: name,
+    score,
+    color
+  }, index) => {
+    let highlight
+
+    if (!gameOver){
+      highlight = index === activity.player
+
+    } else {
+      const highScore = getHighScore()
+      const data = getPlayerData(name)
+      highlight = data.score === highScore
+    }
+
+    if (color && highlight) {
+      color = `#${toneColor(color, 2.0)}`
+    }
+
+    const className = highlight
+      ? "current"
+      : null
+
+    const style = {
+      color
+    }
+
+    const settingsClass = (settings === name)
+      ? "settings"
+      : "settings hide"
+
+    return (
+      <div className="player"
+        key={`${name}`}
+      >
+        <p
+          className={className}
+          style={style}
+          onClick={showSettings}
+        >
+          {name}:
+          <span>{score}</span>
+        </p>
+
+        { role === "teacher" &&
+          <Settings
+            user_name={name}
+            className={settingsClass}
+            close={setSettings}
+            peek={name === user_name || playerCanPeek(name)}
+          />
+        }
+      </div>
+    )
+  })
+
+
+  useEffect(initializePlayers, [activity.players])
+
+
+  return score
+}

@@ -17,7 +17,7 @@ import {
   ActivityContext
 } from '../../state'
 import { getColor, toneColor } from '../../utilities/colors'
-import Settings from './Settings'
+import Settings from '../../components/Settings'
 import '../../css/memory.css'
 
 
@@ -32,6 +32,7 @@ export default function Memory() {
     DEPOT
   } = useContext(WSContext)
   const { activity } = useContext(ActivityContext)
+  if (activity.id !== "memory") { return }
 
   const [ cards, setCards ] = useState([])
   const [ players, setPlayers ] = useState([])
@@ -39,8 +40,6 @@ export default function Memory() {
 
   const [ flippedCards, setFlippedCards ] = useState([])
   const [ settings, setSettings ] = useState()
-
-
 
 
   const flipCard = ({ target }) => {
@@ -156,8 +155,8 @@ export default function Memory() {
 
 
   const score = players.map(({
-    user_name: name, 
-    score, 
+    user_name: name,
+    score,
     color
   }, index) => {
     let highlight
@@ -228,7 +227,6 @@ export default function Memory() {
   })
 
 
-
   const initializePlayers = players => {
     players.forEach((player, number) => {
       player.color = getColor({ number })
@@ -242,7 +240,7 @@ export default function Memory() {
       const img = new Image()
       img.src = `${DEPOT}${image}`
     })
-    
+
     setCards(cards)
   }
 

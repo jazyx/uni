@@ -15,9 +15,7 @@ function easeInOut(t) {
 }
 
 
-export default function Spinner({ questions, index }) {
-  console.log("index:", index)
-
+export default function Spinner({ questions, question, answer }) {
   const STEP = 360 / questions.length
   const RADIUS = LINE_HEIGHT / Math.sin(STEP * RADEG)
   const diameter = RADIUS * 2 + "px"
@@ -36,7 +34,7 @@ export default function Spinner({ questions, index }) {
     const start = rotateRef.current
 
     // Choose the next forward rotation that aligns this line.
-    const offset = (360 - (index * STEP + start) % 360)
+    const offset = (360 - (question * STEP + start) % 360)
     const end = start + offset + 360
     const complete = end - start
 
@@ -86,7 +84,7 @@ export default function Spinner({ questions, index }) {
   }
 
 
-  useEffect(rotateTo, [index])
+  useEffect(rotateTo, [question, answer])
 
 
   return (

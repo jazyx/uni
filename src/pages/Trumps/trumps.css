@@ -13,16 +13,27 @@
 }
 
  #trumps {
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 588px;
-  font-size: 20px;
+
+  & .cards {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 588px;
+    font-size: 20px;
+    overflow: hidden;
+  }
   
   .trump-card {
     border: 1px solid #888;
     border-radius: 1em;
     margin: 0.25em;
     box-sizing: border-box;
+    pointer-events: none;
+    cursor: default;
+
+    &.active {
+      pointer-events: all;
+      cursor: pointer
+    }
   }
 
   img {

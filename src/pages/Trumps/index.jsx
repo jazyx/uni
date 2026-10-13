@@ -8,7 +8,7 @@ import {
   WSContext,
   ActivityContext
 } from '../../state'
-import { getColor, toneColor } from '../../utilities/colors'
+import { Score } from '../../components'
 import Card from './Card'
 import Spinner from './Spinner'
 import './trumps.css'
@@ -25,33 +25,62 @@ export default function Trumps() {
     DEPOT
   } = useContext(WSContext)
   const { activity } = useContext(ActivityContext)
+  if (activity.id !== "trumps") { return }
+
   const {
-    category,
+    // category,
     categories,
     substitutes,
-    questions
+    questions,
+    question,
+    answer,
+    player,
+    players,
+    cards
   } = activity
-  const index = categories.indexOf(category) * 2 
-              + (Math.random() < 0.5)
- 
- 
-  const [ players, setPlayers ] = useState([])
 
-  const options = { categories, substitutes }
+  const playing = players[player]?.user_name === user_name
+    ? player
+    : false
+  const cardOptions = { categories, substitutes, playing }
 
-  const cards = activity.dealt.map(card => (
+  const cardSet = activity.dealt.map((card, index) => (
     <Card 
       key={card.name}
+      correct={answer === index}
       {...card}
-      {...options}
+      {...cardOptions}
     />
   ))
 
 
+  const spinnerOptions = {
+    question,
+    answer,
+    questions
+  }
+
+
+  function preloadImages() {
+    const { cards } = activity
+    if (!cards) { return }
+    cards.forEach(({ image }) => {
+      const img = new Image()
+      img.src = `${DEPOT}${image}`
+    })
+  }
+
+
+  useEffect(preloadImages, [cards])
+
+
   return (
     <div id="trumps">
-      {cards}
-      <Spinner index={index} questions={questions} />
+      <Score />
+      <div className="cards">
+        {cardSet}
+        <Spinner {...spinnerOptions} />
+      </div>
     </div>
   )
 }
