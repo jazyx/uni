@@ -15,9 +15,28 @@ import { Connection } from '../components/'
 export default function Tabs() {
   const { sendMessage, group } = useContext(WSContext)
   const {
-    activity
+    activity,
+    activities,
+    activityNames,
+    active
   } = useContext(ActivityContext)
   const [ theme, setTheme ] = useState(activity.theme || "")
+  const [ activeName, setActiveName ] = useState(active)
+
+
+
+  const selectActivity = ({ target }) => {
+    const id = target.value
+    setActiveName(id)
+
+    const message = {
+      group,
+      subject: "GROUP.SET_ACTIVITY",
+      active: id
+    }
+
+    sendMessage(message)
+  }
 
 
   const selectTheme = ({ target }) => {
@@ -36,9 +55,20 @@ export default function Tabs() {
   }
 
 
-  const options = activity.themes?.map(theme => (
+  const activityOptions = activityNames.map(({ id, name}) => (
+    <option
+      key={id}
+      value={id}
+    >
+      {name}
+    </option>
+  ))
+
+
+  const themeOptions = activity.themes?.map(theme => (
     <option
       key={theme}
+      value={theme}
     >
       {theme}
     </option>
@@ -67,11 +97,21 @@ export default function Tabs() {
   return (
     <div id="tabs">
       <select
-        value={theme}
-        onChange={selectTheme}
+        value={activeName}
+        onChange={selectActivity}
       >
-        {options}
+        {activityOptions}
       </select>
+
+      { activity.themes && (
+          <select
+            value={theme}
+            onChange={selectTheme}
+          >
+            {themeOptions}
+          </select>
+        )
+      }
       {display}
       <Connection />
     </div>

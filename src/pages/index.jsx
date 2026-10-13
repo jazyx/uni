@@ -5,10 +5,12 @@
 
 import Memory from "./Memory"
 import GoFish from "./GoFish"
+import Trumps from "./Trumps"
 
 const activities = {
   Memory,
-  GoFish
+  GoFish,
+  Trumps
 }
 
 export default activities

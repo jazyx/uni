@@ -148,9 +148,9 @@ export const ActivityProvider = ({ children }) => {
     <ActivityContext.Provider
       value ={{
         // members,
-        // activities,
-        // activityNames,
-        // active,
+        activities,
+        activityNames,
+        active,
         activity,
         component
       }}
