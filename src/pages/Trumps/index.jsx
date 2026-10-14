@@ -3,7 +3,7 @@
  */
 
 
-import { useState, useEffect, useContext } from 'react'
+import { useContext } from 'react'
 import {
   WSContext,
   ActivityContext
@@ -16,6 +16,9 @@ import './trumps.css'
 
 
 export default function Trumps() {
+  const { activity } = useContext(ActivityContext)
+  if (activity.id !== "trumps") { return }
+
   const {
     group,
     user_name,
@@ -24,8 +27,7 @@ export default function Trumps() {
     applyState,
     DEPOT
   } = useContext(WSContext)
-  const { activity } = useContext(ActivityContext)
-  if (activity.id !== "trumps") { return }
+
 
   const {
     // category,
@@ -42,10 +44,14 @@ export default function Trumps() {
   const playing = players[player]?.user_name === user_name
     ? player
     : false
-  const cardOptions = { categories, substitutes, playing }
+  const cardOptions = {
+    categories,
+    substitutes,
+    playing
+  }
 
   const cardSet = activity.dealt.map((card, index) => (
-    <Card 
+    <Card
       key={card.name}
       correct={answer === index}
       {...card}
@@ -61,22 +67,9 @@ export default function Trumps() {
   }
 
 
-  function preloadImages() {
-    const { cards } = activity
-    if (!cards) { return }
-    cards.forEach(({ image }) => {
-      const img = new Image()
-      img.src = `${DEPOT}${image}`
-    })
-  }
-
-
-  useEffect(preloadImages, [cards])
-
-
   return (
     <div id="trumps">
-      <Score />
+      <Score />  {/* allowPeek={false} */}
       <div className="cards">
         {cardSet}
         <Spinner {...spinnerOptions} />

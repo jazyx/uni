@@ -13,7 +13,7 @@ import { WSContext } from '../state'
 
 
 export default function Settings(props) {
-  const { user_name, peek, className, close } = props
+  const { user_name, allowPeek, peek, className, close } = props
   const { sendMessage, group } = useContext(WSContext)
 
   const removePlayer = () => {
@@ -27,7 +27,7 @@ export default function Settings(props) {
 
   const activatePlayer = () => {
     sendMessage({
-      subject: "MEMORY.ACTIVATE_PLAYER",
+      subject: "ACTIVATE_PLAYER",
       group,
       user_name
     })
@@ -61,11 +61,13 @@ export default function Settings(props) {
       >
         Activate
       </button>
-      <button
-        onClick={allowPeeking}
-      >
-        {peekTitle}
-      </button>
+      { allowPeek && (
+        <button
+          onClick={allowPeeking}
+        >
+          {peekTitle}
+        </button>
+      )}
     </div>
   )
 }

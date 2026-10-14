@@ -2,8 +2,9 @@
  * frontend/src/pages/Trumps/Card.jsx
  */
 
-import { useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { WSContext } from '../../state'
+import { Throbber } from '../../components'
 
 
 export default function Card(props) {
@@ -18,8 +19,14 @@ export default function Card(props) {
     categories,
     substitutes,
     correct,
-    playing: player
+    playing: player,
   } = props
+  const [ picture, setPicture ] = useState(() => (
+    <div className="img">
+      <Throbber />
+    </div>)
+  )
+
 
 
   const chooseCard = () => {
@@ -55,13 +62,37 @@ export default function Card(props) {
     ? "trump-card"
     : "trump-card active"
 
+
+  const loadPicture = () => {
+    if (!image) { return }
+
+    const src = `${DEPOT}${image}`
+
+    new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        setPicture(() => <img src={src}/>)
+        resolve(src)
+      }
+      img.onerror =() => reject(image)
+      img.src = src
+    })
+    // .then(
+    //   setPicture(() => <img src={src}/>) // COMMENT OUT
+    // )
+  }
+
+
+  useEffect(loadPicture, [image])
+
+
   return (
     <div
       className={className}
       onClick={chooseCard}
     >
       <h4>{name}</h4>
-      <img src={`${DEPOT}${image}`} alt={name} />
+      {picture}
       <ul>{statistics}</ul>
     </div>
   )

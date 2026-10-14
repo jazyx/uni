@@ -10,7 +10,7 @@ import { getColor, toneColor } from '../utilities/colors'
 import '../css/settings.css'
 
 
-export default function Score({ gameOver }) {
+export default function Score({ gameOver, allowPeek }) {
   const {
     user_name,
     role
@@ -27,11 +27,20 @@ export default function Score({ gameOver }) {
   }
 
 
-  function showSettings() {
-    if (settings === user_name) {
+  function showSettings({ target }) {
+    const { name } = target.dataset
+    if (settings === name) {
       return setSettings()
     }
-    setSettings(user_name)
+    setSettings(name)
+  }
+
+
+  function playerCanPeek(name) {
+    const playerData = players.find(({user_name}) => (
+      user_name === name
+    ))
+    return !!(playerData && playerData.peek)
   }
 
 
@@ -81,6 +90,7 @@ export default function Score({ gameOver }) {
           className={className}
           style={style}
           onClick={showSettings}
+          data-name={name}
         >
           {name}:
           <span>{score}</span>
@@ -91,6 +101,7 @@ export default function Score({ gameOver }) {
             user_name={name}
             className={settingsClass}
             close={setSettings}
+            allowPeek={allowPeek}
             peek={name === user_name || playerCanPeek(name)}
           />
         }
@@ -102,5 +113,5 @@ export default function Score({ gameOver }) {
   useEffect(initializePlayers, [activity.players])
 
 
-  return score
+  return <div className="score">{score}</div>
 }
