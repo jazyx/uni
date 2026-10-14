@@ -75,7 +75,7 @@ export default function Card(props) {
         setPicture(() => <img src={src}/>)
         resolve(src)
       }
-      img.onerror =() => reject(`Image not found: ${src}`)
+      img.onerror = () => reject(`Image not found: ${src}`)
       img.src = src
     })
     .catch(error => console.error(error))

@@ -203,7 +203,7 @@ export default function Memory() {
 
     // Keep checking connection if it's not myTurn
     const mode = myTurn ? "IDLE" : "EAGER"
-    // applyState(mode)
+    applyState(mode)
   }
 
 

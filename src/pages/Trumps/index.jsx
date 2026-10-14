@@ -20,12 +20,12 @@ export default function Trumps() {
   if (activity.id !== "trumps") { return }
 
   const {
-    group,
+    // group,
     user_name,
-    role,
-    sendMessage,
+    // role,
+    // sendMessage,
     applyState,
-    DEPOT
+    // DEPOT
   } = useContext(WSContext)
 
 
@@ -38,7 +38,7 @@ export default function Trumps() {
     answer,
     player,
     players,
-    cards
+    // cards
   } = activity
 
   const playing = players[player]?.user_name === user_name
@@ -49,6 +49,11 @@ export default function Trumps() {
     substitutes,
     playing
   }
+
+  // Keep checking connection if it's not myTurn
+  const mode = playing === false ? "EAGER" : "IDLE"
+  applyState(mode)
+
 
   const cardSet = activity.dealt.map((card, index) => (
     <Card
