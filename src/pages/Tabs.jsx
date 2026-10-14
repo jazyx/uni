@@ -16,7 +16,7 @@ export default function Tabs() {
   const { sendMessage, group } = useContext(WSContext)
   const {
     activity,
-    activities,
+    // activities,
     activityNames,
     active
   } = useContext(ActivityContext)

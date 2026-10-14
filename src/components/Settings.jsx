@@ -18,7 +18,7 @@ export default function Settings(props) {
 
   const removePlayer = () => {
     sendMessage({
-      subject: "MEMORY.REMOVE_PLAYER",
+      subject: "REMOVE_PLAYER",
       group,
       user_name
     })

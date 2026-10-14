@@ -114,15 +114,6 @@ export const ActivityProvider = ({ children }) => {
   }  
 
 
-  // const treatActivityMessage = message => {
-  //   switch (message.subject) {
-  //     case "GROUP.ACTIVITY": {
-
-  //     }
-  //   }
-  // }
-
-
   const treatActivityUpdate = message => {
     console.log("ACTIVITY UPDATE:", message)
 
@@ -131,6 +122,8 @@ export const ActivityProvider = ({ children }) => {
 
 
   const registerListeners = () => {
+    if (!on) { return }
+
     on("pending", pending)
     on("incoming", incoming)
 
@@ -141,7 +134,7 @@ export const ActivityProvider = ({ children }) => {
   }
 
 
-  useEffect(registerListeners, [])
+  useEffect(registerListeners, [on])
   
 
   return (

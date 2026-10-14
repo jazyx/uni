@@ -17,7 +17,7 @@ import {
   ActivityContext
 } from '../../state'
 import { getColor, toneColor } from '../../utilities/colors'
-import Settings from '../../components/Settings'
+import { Score } from '../../components'
 import '../../css/memory.css'
 
 
@@ -154,79 +154,6 @@ export default function Memory() {
   )
 
 
-  const score = players.map(({
-    user_name: name,
-    score,
-    color
-  }, index) => {
-    let highlight
-    if (toFind){
-      highlight = index === activity.player
-
-    } else {
-      const highScore = getHighScore()
-      const data = getPlayerData(name)
-      highlight = data.score === highScore
-    }
-
-    if (highlight) {
-      color = `#${toneColor(color, 2.)}`
-    }
-
-    const className = highlight
-      ? "current"
-      : null
-
-    const style = {
-      color
-    }
-
-    const settingsClass = (settings === name)
-      ? "settings"
-      : "settings hide"
-
-    return (
-      <div className="player"
-        key={`${name}`}
-      >
-        <p
-          className={className}
-          style={style}
-          onClick={showSettings}
-        >
-          {name}:
-          <span>{score}</span>
-        </p>
-
-        { role === "teacher" &&
-          <Settings
-            user_name={name}
-            className={settingsClass}
-            close={setSettings}
-            peek={name === user_name || playerCanPeek(name)}
-          />
-        }
-      </div>
-    )
-
-
-    function playerCanPeek(name) {
-      const playerData = players.find(({user_name}) => (
-        user_name === name
-      ))
-      return !!(playerData && playerData.peek)
-    }
-
-
-    function showSettings() {
-      if (settings === name) {
-        return setSettings()
-      }
-      setSettings(name)
-    }
-  })
-
-
   const initializePlayers = players => {
     players.forEach((player, number) => {
       player.color = getColor({ number })
@@ -235,21 +162,16 @@ export default function Memory() {
   }
 
 
-  function preloadImages(cards) {
+  function preloadImages() {
+    const { cards } = activity.cards
+    if (!cards) { return }
+
     cards.forEach(({ image }) => {
       const img = new Image()
       img.src = `${DEPOT}${image}`
     })
 
     setCards(cards)
-  }
-
-
-  const startGame = () => {
-    if (activity.players) {
-      initializePlayers(activity.players)
-    }
-    preloadImages(activity.cards)
   }
 
 
@@ -285,8 +207,7 @@ export default function Memory() {
   }
 
 
-  // useEffect(registerListeners, [])
-  useEffect(startGame, [activity.players])
+  useEffect(preloadImages, [activity?.cards])
   useEffect(gameUpdate, [activity])
 
 
@@ -304,7 +225,7 @@ export default function Memory() {
     <div
       id="memory"
     >
-      <div className="score">{score}</div>
+      <Score allowPeek={true} />
       <div className={layoutClass}>{layout}</div>
     </div>
   )

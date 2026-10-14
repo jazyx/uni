@@ -47,9 +47,18 @@
     &.current {
       color: #fff;
     }
+
+    &.offline {
+      font-style: italic;
+
+      &::before {
+        content: " ✂";
+        font-style: normal;
+      }
+    }
   }
 
   & span {
-    margin-left: 1em;
+    margin-left: 0.25em;
   }
 }

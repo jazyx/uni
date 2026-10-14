@@ -21,12 +21,11 @@ export default function Score({ gameOver, allowPeek }) {
 
 
 
-
   const initializePlayers = () => {
     if (!activity || !activity.players) { return }
 
     activity.players.forEach((player, number) => {
-      player.color = getColor({ number })
+      player.color = getColor({ number, l:0.5, })
     })
     setPlayers(activity.players)
   }
@@ -58,7 +57,8 @@ export default function Score({ gameOver, allowPeek }) {
   const score = players.map(({
     user_name: name,
     score,
-    color
+    color,
+    offline
   }, index) => {
     let highlight
 
@@ -75,9 +75,12 @@ export default function Score({ gameOver, allowPeek }) {
       color = `#${toneColor(color, 2.0)}`
     }
 
-    const className = highlight
-      ? "current"
-      : null
+    let className = highlight
+      ? `current${offline ? " offline" : ""}`
+      : offline
+        ? "offline"
+        : null
+
 
     const style = {
       color

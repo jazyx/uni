@@ -899,7 +899,7 @@ function createGameSocket(userOptions) {
    * schedules one at the appropriate later time.
    */
   function _reschedulePulse(ws, delay) { // undefined || 0
-    return // ################ TODO: RE-ENABLE ################ //
+    // return // ############### TODO: RE-ENABLE ############### //
     if (ws !== socket) { return }
 
     clearTimeout(ws._pulseTimer)
