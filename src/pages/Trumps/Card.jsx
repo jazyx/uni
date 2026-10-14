@@ -37,7 +37,8 @@ export default function Card(props) {
       subject: "TRUMPS.ANSWER",
       group,
       correct,
-      player
+      player,
+      image
     })
   }
 
@@ -74,12 +75,10 @@ export default function Card(props) {
         setPicture(() => <img src={src}/>)
         resolve(src)
       }
-      img.onerror =() => reject(image)
+      img.onerror =() => reject(`Image not found: ${src}`)
       img.src = src
     })
-    // .then(
-    //   setPicture(() => <img src={src}/>) // COMMENT OUT
-    // )
+    .catch(error => console.error(error))
   }
 
 
