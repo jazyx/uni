@@ -16,14 +16,19 @@ export default function Score({ gameOver, allowPeek }) {
     role
   } = useContext(WSContext)
   const { activity } = useContext(ActivityContext)
-  const { players, player } = activity
   const [ settings, setSettings ] = useState("")
+  const [ players, setPlayers ] = useState([])
+
+
 
 
   const initializePlayers = () => {
-    activity?.players?.forEach((player, number) => {
+    if (!activity || !activity.players) { return }
+
+    activity.players.forEach((player, number) => {
       player.color = getColor({ number })
     })
+    setPlayers(activity.players)
   }
 
 
@@ -50,7 +55,7 @@ export default function Score({ gameOver, allowPeek }) {
   }
 
 
-  const score = players?.map(({
+  const score = players.map(({
     user_name: name,
     score,
     color
@@ -110,7 +115,7 @@ export default function Score({ gameOver, allowPeek }) {
   })
 
 
-  useEffect(initializePlayers, [activity.players])
+  useEffect(initializePlayers, [activity?.players])
 
 
   return <div className="score">{score}</div>

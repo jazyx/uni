@@ -85,13 +85,15 @@ export default function Tabs() {
 
 
   const setTopic = () => {
+    setActiveName(active)
+
     if (activity.theme) {
       setTheme(activity.theme)
     }
   }
 
 
-  useEffect(setTopic, [activity])
+  useEffect(setTopic, [activity, active])
 
 
   return (

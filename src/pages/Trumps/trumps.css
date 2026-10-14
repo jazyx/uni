@@ -17,7 +17,6 @@
   & .cards {
     display: flex;
     flex-wrap: wrap;
-    max-width: 588px;
     font-size: 20px;
     overflow: hidden;
   }
