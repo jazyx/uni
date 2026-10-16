@@ -7,7 +7,7 @@
  */
 
 import { useContext, useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 import { WSContext } from '../state'
 import Tabs from './Tabs'
 import { Recorder } from '../components' // DEBUGGING ONLY
@@ -18,7 +18,7 @@ import '../css/frame.css'
 
 export default function Frame() {
   const { hasConnected, logIn } = useContext(WSContext)
-
+ const { group, name } = useParams()
 
   /**
    * Reads user_name and group from location.pathname... if present
@@ -27,7 +27,7 @@ export default function Frame() {
   function checkClientStatus() {
     if (!hasConnected) { return }
 
-    const { name, group } = parsePath() // from /uni/Name/group/*
+    // const { name, group } = parsePath() // from /uni/Name/group/*
 
     if (name && group) {
       const promise = logIn({ user_name: name, group })

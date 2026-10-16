@@ -25,7 +25,11 @@ function App() {
               element={<GameWrapper />}
             />
             <Route
-              path="/:name"
+              path="/:group/:name/*"
+              element={<GameWrapper />}
+            />
+            <Route
+              path="/:group"
               element={<GameWrapper />}
             />
           </Route>
