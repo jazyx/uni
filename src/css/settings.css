@@ -49,12 +49,13 @@
     }
 
     &.offline {
-      font-style: italic;
-
-      &::before {
+      /* font-style: italic; */
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      /* &::before {
         content: " ✂";
         font-style: normal;
-      }
+      } */
     }
   }
 

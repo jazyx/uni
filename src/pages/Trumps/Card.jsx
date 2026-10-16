@@ -47,6 +47,18 @@ export default function Card(props) {
   }
 
 
+  const smarts = value => {
+    // const style = { width: `${Math.sqrt(value) * 16}%` }
+    const style = { width: `${value * 2.75}%` }
+    return (
+      <span className="smarts">
+        <span className="bar" style={style} />
+        <span className="qi">{value}</span>
+      </span>
+    )
+  }
+
+
   const statistics = categories.map((key, index) => {
     const value = props[key]
     const swap = substitutes[key]
@@ -63,6 +75,11 @@ export default function Card(props) {
     if (swap) {
       key = swap
     }
+
+    const stat = key === "intelligence"
+      ? smarts(value)
+      : value
+
     return (
       <li
         key={key}
@@ -70,7 +87,7 @@ export default function Card(props) {
       >
         <span>{key}</span>
         <span className={spanClass}>
-          {value}
+          {stat}
         </span>
       </li>
     )

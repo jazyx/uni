@@ -83,13 +83,14 @@ export default function Score({ gameOver, allowPeek }) {
     }
 
     let className = highlight
-      ? `current${offline ? " offline" : ""}`
+      ? `current${offline ? " offline" : ""}` // offline possible?
       : offline
         ? "offline"
         : null
 
     const style = {
-      color
+      color,
+      textDecoration: `${name === user_name ? "underline" : ""}`
     }
 
     const settingsClass = (settings === name)
