@@ -4,6 +4,7 @@
 
 
 import { useState, useRef, useContext } from 'react'
+import { useParams } from 'react-router-dom'
 import { WSContext } from '../state/'
 import { Throbber } from '../components'
 
@@ -19,8 +20,12 @@ export default function LogIn({ name }) {
     loggingIn,
     setLoggingIn
   } = useContext(WSContext)
+  let { group: id } = useParams()
+  if (!id) {
+    id = "eng"
+  }
 
-  const [ group, setGroup ] = useState("eng")
+  const [ group, setGroup ] = useState(id)
   const [ userName, setUserName ] = useState(name || user_name)
   const [ reason, setReason ] = useState("")
 
