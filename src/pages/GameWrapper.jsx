@@ -24,7 +24,6 @@ import Throbber from '../components/Throbber'
 import LogIn from './LogIn'
 import activities from './'
 
-console.log("activities:", activities)
 
 export default function GameWrapper() {
   const [ Activity, setActivity ] = useState(() => Throbber)

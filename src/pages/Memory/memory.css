@@ -104,12 +104,13 @@
         }
       }
 
-      &:has(img.show-found),
+      &:has(img.all-found),
       &:has(img.found) {
-        cursor: default
+        cursor: default;
+        pointer-events: none;
       }
 
-      &:has(.show-found) {
+      &:has(.all-found) {
         border: 1px inset white;
         box-sizing: border-box;
       }
@@ -123,7 +124,7 @@
         line-height: 5em;
 
         &.found {
-          opacity: 0.25;
+          opacity: 0.325;
         }
       }
     }

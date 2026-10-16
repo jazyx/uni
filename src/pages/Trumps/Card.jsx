@@ -18,15 +18,19 @@ export default function Card(props) {
     image,
     categories,
     substitutes,
+    question,
     correct,
     playing: player,
+    hint
   } = props
+
   const [ picture, setPicture ] = useState(() => (
     <div className="img">
       <Throbber />
     </div>)
   )
 
+  const answerLine = Math.floor(question / 2)
 
 
   const chooseCard = () => {
@@ -43,17 +47,31 @@ export default function Card(props) {
   }
 
 
-  const statistics = categories.map(key => {
+  const statistics = categories.map((key, index) => {
     const value = props[key]
     const swap = substitutes[key]
+    const className = (index === answerLine)
+      ? (hint)
+        ? hint // "hilite" | "hover"
+        : null
+      : null
+
+    const spanClass = (hint === "blur")
+      ? "blur"
+      : null
+
     if (swap) {
       key = swap
     }
     return (
       <li
         key={key}
+        className={className}
       >
-        <span>{key}</span><span>{value}</span>
+        <span>{key}</span>
+        <span className={spanClass}>
+          {value}
+        </span>
       </li>
     )
   })

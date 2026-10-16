@@ -149,8 +149,10 @@ export const WSProvider = ({ children }) => {
         json,
         setJSON,
 
-        // Only for Recorder
         on: WSS.on,
+        off: WSS.off,
+        
+        // Only for Recorder
         events: WSS.events
       }}
     >

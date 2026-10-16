@@ -122,7 +122,7 @@ export const ActivityProvider = ({ children }) => {
 
 
   const registerListeners = () => {
-    if (!on) { return }
+    if (!on || !off) { return }
 
     on("pending", pending)
     on("incoming", incoming)
@@ -134,7 +134,7 @@ export const ActivityProvider = ({ children }) => {
   }
 
 
-  useEffect(registerListeners, [on])
+  useEffect(registerListeners, [on, off])
   
 
   return (

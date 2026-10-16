@@ -16,9 +16,8 @@ import {
   WSContext,
   ActivityContext
 } from '../../state'
-import { getColor, toneColor } from '../../utilities/colors'
 import { Score } from '../../components'
-import '../../css/memory.css'
+import './memory.css'
 
 
 
@@ -36,10 +35,8 @@ export default function Memory() {
 
   const [ cards, setCards ] = useState([])
   const [ players, setPlayers ] = useState([])
-  const [ toFind, setToFind ] = useState(activity.to_find || 999)
-
   const [ flippedCards, setFlippedCards ] = useState([])
-  const [ settings, setSettings ] = useState()
+  const [ gameOver, setGameOver ] = useState(false)
 
 
   const flipCard = ({ target }) => {
@@ -85,7 +82,7 @@ export default function Memory() {
       flipped,
       player: user_name
     }
-    sendMessage(message)
+    sendMessage(message, 1000)
   }
 
 
@@ -96,13 +93,13 @@ export default function Memory() {
                       .replace("_", " ")
     const key = `${index}_${name}`
 
-    const foundClass = ((!toFind && found))
-      ? "show-found"
+    const foundClass = ((gameOver && found))
+      ? "all-found"
       : "found"
 
-    const style = toFind
-      ? {}
-      : playerColor(found)
+    const style = (gameOver)
+      ? playerColor(found)
+      : {}
 
     return (
       <div
@@ -143,25 +140,6 @@ export default function Memory() {
   })
 
 
-  const getHighScore = () => {
-    const scores = players.map(({score}) => score)
-    return Math.max.apply(null, scores)
-  }
-
-
-  const getPlayerData = user_name => (
-    players.find(data => data.user_name === user_name)
-  )
-
-
-  const initializePlayers = players => {
-    players.forEach((player, number) => {
-      player.color = getColor({ number })
-    })
-    setPlayers(players)
-  }
-
-
   function preloadImages() {
     const { cards } = activity.cards
     if (!cards) { return }
@@ -179,7 +157,7 @@ export default function Memory() {
     const {
       cards,
       players=[],
-      to_find,
+      player,
       turn_over
     } = activity
 
@@ -191,15 +169,27 @@ export default function Memory() {
 
     setCards(cards)
     setPlayers(players)
-    setToFind(to_find)
+    if (activity.to_find < 1) {
+      // Double-check that all cards have non-empty `found`
+      const allFound = cards.every(({ found }) => !!found )
+      setGameOver(allFound)
+    } else {
+      setGameOver(false)
+    }
 
     // Ensure only the current player can turn cards
-    const myTurn = players[activity.player].user_name === user_name
+    const myTurn = players[player].user_name === user_name
     const custom = (myTurn)
       ? "all"
       : "none"
-
+    // Set value for pointer-events for div#memory
     document.documentElement.style.setProperty("--events", custom)
+
+    // Set background color to show whose turn it is
+    const bg = (myTurn)
+      ? "#020"
+      : "#222"
+    document.documentElement.style.setProperty("--bg", bg)
 
     // Keep checking connection if it's not myTurn
     const mode = myTurn ? "IDLE" : "EAGER"
@@ -225,7 +215,7 @@ export default function Memory() {
     <div
       id="memory"
     >
-      <Score allowPeek={true} />
+      <Score allowPeek={true} gameOver={gameOver} />
       <div className={layoutClass}>{layout}</div>
     </div>
   )

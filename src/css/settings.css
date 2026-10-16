@@ -62,3 +62,57 @@
     margin-left: 0.25em;
   }
 }
+
+.options {
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+
+  & button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 1.6em;
+    border-radius: 0.25em;
+
+    &:hover:active,
+    &.pressed {
+      background-color: transparent;
+      border-style: inset;
+    }
+  }
+
+  & span {
+    position: relative;
+    top: -0.1em;
+  }
+
+  & .options-pane {
+    position: relative;
+    border: 1px outset #888;
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    padding: 0.5em 0.5em 0;
+    width: 2.5em;
+    background-color: var(--bg); 
+    z-index: 1;
+
+    label {
+      display: block;
+
+      &.trio {
+        margin-top: 0.5em;
+      }
+    }
+    input {
+      position: absolute;
+      left: -999vw;
+
+      &:checked ~ span {
+        color: #0c0
+      }
+    }
+  }
+}

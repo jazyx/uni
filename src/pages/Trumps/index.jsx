@@ -30,7 +30,6 @@ export default function Trumps() {
 
 
   const {
-    // category,
     categories,
     substitutes,
     questions,
@@ -38,7 +37,7 @@ export default function Trumps() {
     answer,
     player,
     players,
-    // cards
+    hint
   } = activity
 
   const playing = players[player]?.user_name === user_name
@@ -47,13 +46,19 @@ export default function Trumps() {
   const cardOptions = {
     categories,
     substitutes,
-    playing
+    playing,
+    question,
+    hint
   }
 
   // Keep checking connection if it's not myTurn
   const mode = playing === false ? "EAGER" : "IDLE"
   applyState(mode)
 
+  const bg = (playing === false)
+    ? "#222"
+    : "#020"
+  document.documentElement.style.setProperty("--bg", bg)
 
   const cardSet = activity.dealt.map((card, index) => (
     <Card

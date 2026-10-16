@@ -31,9 +31,11 @@ export default function Frame() {
 
     if (name && group) {
       const promise = logIn({ user_name: name, group })
-      promise.then(response => {
-        console.log("response:", response)
-      })
+      if (promise) {
+        promise.then(response => {
+          console.log("FRAME LOGIN:", response)
+        })
+      }
     } // otherwise, LogIn page will show
   }
 

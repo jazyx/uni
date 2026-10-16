@@ -8,21 +8,19 @@ import {
   WSContext,
   ActivityContext
 } from '../state/'
-import { Connection } from '../components/'
+import { Connection, Options } from '../components/'
 
 
 
 export default function Tabs() {
-  const { sendMessage, group } = useContext(WSContext)
+  const { sendMessage, group, user_name, role } = useContext(WSContext)
   const {
     activity,
-    // activities,
     activityNames,
     active
   } = useContext(ActivityContext)
   const [ theme, setTheme ] = useState(activity.theme || "")
   const [ activeName, setActiveName ] = useState(active)
-
 
 
   const selectActivity = ({ target }) => {
@@ -75,6 +73,12 @@ export default function Tabs() {
   ))
 
 
+
+  const options = (role === "teacher" && activity.options)
+    ? <Options {...activity.options} />
+    : null
+
+
   const display = (true) // (role)
     ? <button
         onClick={newGame}
@@ -104,6 +108,8 @@ export default function Tabs() {
       >
         {activityOptions}
       </select>
+
+      { options }
 
       { activity.themes && (
           <select

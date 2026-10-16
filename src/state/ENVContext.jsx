@@ -22,6 +22,7 @@ const R_DEPOT = import.meta.env.VITE_REMOTE_DEPOT
 const dev = /^localhost:517\d$/.test(
   window.location.host
 )
+// const dev = false // use remote backend
  
 // For HTTPS? queries
 const ORIGIN = dev ? LOCAL : REMOTE

@@ -41,9 +41,7 @@ export default function Score({ gameOver, allowPeek }) {
 
 
   function playerCanPeek(name) {
-    const playerData = players.find(({user_name}) => (
-      user_name === name
-    ))
+    const playerData = getPlayerData(name)
     return !!(playerData && playerData.peek)
   }
 
@@ -51,6 +49,13 @@ export default function Score({ gameOver, allowPeek }) {
   const getHighScore = () => {
     const scores = players.map(({score}) => score)
     return Math.max.apply(null, scores)
+  }
+
+
+  const getPlayerData = (name) => { 
+    return players.find(({user_name}) => (
+      user_name === name
+    ))
   }
 
 
@@ -63,9 +68,11 @@ export default function Score({ gameOver, allowPeek }) {
     let highlight
 
     if (!gameOver){
+      // Highlight the current player's name
       highlight = index === activity.player
 
     } else {
+      // Highlight the winner's name(s)
       const highScore = getHighScore()
       const data = getPlayerData(name)
       highlight = data.score === highScore
@@ -80,7 +87,6 @@ export default function Score({ gameOver, allowPeek }) {
       : offline
         ? "offline"
         : null
-
 
     const style = {
       color

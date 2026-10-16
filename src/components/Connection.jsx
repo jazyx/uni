@@ -26,6 +26,7 @@ const DURATION = "30000ms" // equivalent to gameSocket.keepaliveMs
 export default function Connection(props) {
   const {
     isConnected,
+    isLoggedIn,
     ackCount,
     cpr
   } = useContext(WSContext)
@@ -37,14 +38,19 @@ export default function Connection(props) {
   }
 
 
-  const style = (isConnected)
-    ? (fading)
-      ? { "backgroundColor": "#c60",
-          transition: `background-color ${DURATION} linear` }
-      : { "backgroundColor": "#090",
-          transition: "none"
-        }
-    : { "backgroundColor": "#900" } // throbber also shows
+  const style = (isLoggedIn)
+    ? (isConnected)
+      ? (fading)
+        ? { "backgroundColor": "#c60",
+            transition: `background-color ${DURATION} linear` }
+        : { "backgroundColor": "#090",
+            transition: "none"
+          }
+      : { "backgroundColor": "#900" } // throbber also shows
+    : { backgroundColor: "#888",
+        pointerEvents: "none",
+        cursor: "default"
+      }
 
 
   const refreshConnection = () => {
@@ -69,7 +75,7 @@ export default function Connection(props) {
       onClick={doCPR}
       style={style}
     >
-      { !isConnected && <Throbber /> }
+      { isLoggedIn && !isConnected && <Throbber /> }
     </div>
   )
 }

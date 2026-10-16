@@ -304,7 +304,9 @@ function createGameSocket(userOptions) {
     // log in process
     ;({ user_name, user_id, group } = userData)
 
-    if (!hasConnected) { return } // wait for CONNECTION
+    if (!hasConnected) {
+      return Promise.resolve("Not yet connected. Will be called again after CONNECTION.")
+    } // wait for CONNECTION
 
     const promise = send({
       recipient_id: "SYSTEM",
@@ -707,28 +709,65 @@ function createGameSocket(userOptions) {
 
   function _treatSystemMessage(message) {
     switch (message.subject) {
-      case "CONNECTION":{
-        socket_id = message.recipient_id // private and temporary
-
-        // This message wasn't explicitly requested by a send()
-        // action, so there is no Promise pending.
-        _emit("incoming", {...message, url: socket.url})
-
-        // The socket is now ready to send outgoing messages,
-        // such as a LOG_IN reminder to the backend of this
-        // user's identity.
-        hasConnected = true // remains true until manual disconnect
-        _identifyUser()
-        break // status available through isConnected()
+      case "CONNECTION": {
+        return _handleConnection(message)
       }
-
       case "LOGIN_RESULT": {
-        _handleLogIn(message)
-        break
+        return _handleLogIn(message)
+      }
+      case "FORCE_DISCONNECTION": {
+        return _handleForceDisconnection(message)
       }
     }
 
     return true // tell _onMessage() this was already treated
+  }
+
+
+  function _handleConnection(message) {
+    socket_id = message.recipient_id // private and temporary
+
+    // This message wasn't explicitly requested by a send()
+    // action, so there is no Promise pending.
+    _emit("incoming", {...message, url: socket.url})
+
+    // The socket is now ready to send outgoing messages,
+    // such as a LOG_IN reminder to the backend of this
+    // user's identity.
+    hasConnected = true // remains true until manual disconnect
+    _identifyUser()
+
+    return true
+  }
+
+
+  /**
+   * Called by _handleConnection() when "CONNECTION" is
+   * received. If the previous connection in this session was
+   * broken, the backend needs to be told which user the new
+   * socket belongs to, so that it can apply any instructions
+   * from this user appropriately.
+   * The backend will respond to this request with a LOGGED_IN
+   * message, at which point any queued messages that did not
+   * receive acknowledgement before the socket broke will be
+   * resent.
+   */
+  function _identifyUser() {
+    if (user_name || user_id) {
+      send({
+        recipient_id: "SYSTEM",
+        subject: "LOG_IN",
+        user_name,
+        user_id,
+        group,
+      }, opts.logInDelay)
+      .then(response => (
+        _emit("info", response)
+      ))
+      .catch(error => (
+        _emit("info", error)
+      ))
+    }
   }
 
 
@@ -738,7 +777,7 @@ function createGameSocket(userOptions) {
     // console.log(`LOG_IN ${message.corr} envelope: ${JSON.stringify(envelope)}`)
     if (!envelope) {
       // Not one of ours, or already treated
-      return
+      return true
     }
 
     // Response received; no need to resend
@@ -746,15 +785,12 @@ function createGameSocket(userOptions) {
     clearTimeout(envelope.endTimer)
     queue.delete(message.corr)
 
-    // console.log(`LOG_IN envelope${envelope}`)
-
-
     // Store user_id and user_name locally. These can be
     // accessed through gameSocket.getUser()
     if (message.status === "LOGGED_IN") {
       ({ user_id, user_name, group, role } = message)
       user_name = decodeURI(user_name)
-      console.log("gameSocket Logged in as:", user_id, user_name)
+      console.log("gameSocket Logged in as:", user_id, user_name, message.recipient_id, socket_id)
 
       // Now that the backend can identify the user to whom
       // this socket belongs, it's safe to send any
@@ -792,36 +828,20 @@ function createGameSocket(userOptions) {
       message: envelope.message // original outgoing message
     })
 
+    return true
   }
 
 
-  /**
-   * Called by _treatSystemMessage() when "CONNECTION" is
-   * received. If the previous connection in this session was
-   * broken, the backend needs to be told which user the new
-   * socket belongs to, so that it can apply any instructions
-   * from this user appropriately.
-   * The backend will respond to this request with a LOGGED_IN
-   * message, at which point any queued messages that did not
-   * receive acknowledgement before the socket broke will be
-   * resent.
-   */
-  function _identifyUser() {
-    if (user_name || user_id) {
-      send({
-        recipient_id: "SYSTEM",
-        subject: "LOG_IN",
-        user_name,
-        user_id,
-        group,
-      }, opts.logInDelay)
-      .then(response => (
-        _emit("info", response)
-      ))
-      .catch(error => (
-        _emit("info", error)
-      ))
-    }
+  function _handleForceDisconnection(message) {
+    disconnect()
+
+    _emit("logging", {
+      status: "DISCONNECTED",
+      user_name,
+      user_id,
+      group,
+      role
+    })
   }
 
 
@@ -974,10 +994,10 @@ function createGameSocket(userOptions) {
       _openSocket("reconnect timer")
     }, reconnectMs)
 
+    _emit("info", { action: "_scheduleReconnect", reconnectMs })
+
     // Wait longer before next reconnect attempt
     reconnectMs = Math.min(opts.reconnectMaxMs, reconnectMs * 2)
-
-    _emit("info", { action: "_scheduleReconnect", reconnectMs })
   }
 
 
