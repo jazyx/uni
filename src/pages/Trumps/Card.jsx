@@ -22,7 +22,7 @@ export default function Card(props) {
     correct,
     playing: player,
     hint
-  } = props
+  } = props // categories like "weight", "size" still in props
 
   const [ picture, setPicture ] = useState(() => (
     <div className="img">
@@ -59,7 +59,12 @@ export default function Card(props) {
   }
 
 
-  const statistics = categories.map((key, index) => {
+  const available = categories
+    .filter(([,,show]) => show)
+    .sort((a, b) => a[0] - b[0])
+    .map(([, category]) => category)
+
+  const statistics = available.map((key, index) => {
     const value = props[key]
     const swap = substitutes[key]
     const className = (index === answerLine)

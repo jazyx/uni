@@ -18,10 +18,10 @@ function easeInOut(t) {
 export default function Spinner({ questions, question, answer }) {
   const STEP = 360 / questions.length
   const RADIUS = LINE_HEIGHT / Math.sin(STEP * RADEG)
-  const diameter = RADIUS * 2 + "px"
-  document.documentElement.style.setProperty(
-    "--diameter", diameter
-  )
+  const diameter = parseInt(RADIUS * 2)
+  // document.documentElement.style.setProperty(
+  //   "--diameter", diameter
+  // )
   const [ rotation, setRotation ] = useState(0)
   const rotateRef = useRef(0)
   const frameRef = useRef(null)

@@ -17,8 +17,9 @@ import { WSContext, ActivityContext } from '../state'
 export default function Options(props) {
   const { sendMessage, group } = useContext(WSContext)
   const { activity } = useContext(ActivityContext)
-  const { hint, compare } = activity
+  const { hint, compare, categories } = activity
   const [ pressed, setPressed ] = useState(false)
+
 
 
   const togglePressed = event => {
@@ -63,62 +64,156 @@ export default function Options(props) {
   }
 
 
+  const selectCategory = ({ target }) => {
+    const { dataset, checked } = target
+    const category = dataset.name
+    const categoryData = categories?.find(([ , name ]) => (
+      name === category
+    ))
+
+    // Ensure that there will be at least 2 categories
+    const count = categories.reduce((count, category) => (
+      count + category[2]
+    ), 0)
+    if (count - !checked < 2) {
+      return
+    }
+
+    categoryData[2] = checked
+
+    sendMessage({
+      subject: "TRUMPS.SET_CATEGORIES",
+      group,
+      categories
+    })
+  }
+
+
+
+  const useCategory = category => {
+    return categories?.find(([ , name ]) => name === category)[2]
+  }
+
+
   const createPane = () => {
     return (
       <div
         className="options-pane"
       >
-        <div className="hints">
-          <label>
+        <div className="show">
+          <div className="hints">
+            <label>
+              <input
+                type="radio"
+                name="hint"
+                id="hilite"
+                checked={hint==="hilite"}
+                onChange={updateHint}
+              />
+              <span>hilite</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="hint"
+                id="hover"
+                checked={hint==="hover"}
+                onChange={updateHint}
+              />
+              <span>hover</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="hint"
+                id="none"
+                checked={hint==="none"}
+                onChange={updateHint}
+              />
+              <span>none</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="hint"
+                id="blur"
+                checked={hint==="blur"}
+                onChange={updateHint}
+              />
+              <span>blur</span>
+            </label>
+          </div>
+          <label className="trio">
             <input
-              type="radio"
-              name="hint"
-              id="hilite"
-              checked={hint==="hilite"}
-              onChange={updateHint}
+              type="checkbox"
+              onChange={selectTrio}
+              checked={compare===3}
             />
-            <span>hilite</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hint"
-              id="hover"
-              checked={hint==="hover"}
-              onChange={updateHint}
-            />
-            <span>hover</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hint"
-              id="none"
-              checked={hint==="none"}
-              onChange={updateHint}
-            />
-            <span>none</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hint"
-              id="blur"
-              checked={hint==="blur"}
-              onChange={updateHint}
-            />
-            <span>blur</span>
+            <span>Trio</span>
           </label>
         </div>
 
-        <label className="trio">
-          <input
-            type="checkbox"
-            onChange={selectTrio}
-            checked={compare===3}
-          />
-          <span>Trio</span>
-        </label>
+        <div className="stats">
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="weight"
+              checked={useCategory("weight")}
+            />
+            <span>Weight</span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="size"
+              checked={useCategory("size")}
+            />
+            <span>Size</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="legs"
+              checked={useCategory("legs")}
+            />
+            <span>Legs</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="babies"
+              checked={useCategory("babies")}
+            />
+            <span>Babies</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="life"
+              checked={useCategory("life")}
+            />
+            <span>Life</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              onChange={selectCategory}
+              data-name="intelligence"
+              checked={useCategory("intelligence")}
+            />
+            <span>Intelligence</span>
+          </label>
+
+        </div>
       </div>
     )
   }
